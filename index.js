@@ -180,9 +180,12 @@ class ServerlessPlugin {
 
     autoAddIAMRoleStatements() {
         if (this.serverless.service.custom.kmsKeyAddRoleStatement) {
+            if (!Array.isArray(this.serverless.service.provider.iamRoleStatements)) {
+                this.serverless.service.provider.iamRoleStatements = [];
+            }
             this.serverless.service.provider.iamRoleStatements.push({
                 Effect: 'Allow',
-                Action: [ 'kms:Decrypt', 'kms:Encrypt' ],
+                Action: [ 'kms:Decrypt' ],
                 Resource: this.kmsKeyArn
             });
         }
