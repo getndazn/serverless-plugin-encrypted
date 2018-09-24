@@ -96,6 +96,6 @@ If `kmsKeyAddRoleStatement` is set as `true`, the plugin will auto create and ad
 
 ```
   Effect: 'Allow'
-  Action: [ 'kms:Decrypt', 'kms:Encrypt' ]
+  Action: [ 'kms:Decrypt' ]
   Resource: kms-key-arn
 ```
