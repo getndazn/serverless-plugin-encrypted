@@ -1,4 +1,4 @@
-# serverless-plugin-encrypted (Version: 1.2.0)
+# serverless-plugin-encrypted
 
 A [Serverless](https://serverless.com/) [plugin](https://serverless.com/framework/docs/providers/aws/guide/plugins/)
  which encrypts Lambda environment variables using an KMS key which is automatically generated for each stage.
@@ -26,7 +26,6 @@ plugins:
   - serverless-plugin-encrypted
     
 custom:
-  awsAccountId: null # If this porperty is null or empty, the plugin will auto set before all.
   kmsKeyId: ${self:provider.stage}-my-service
 
   kmsKeyPolicy: # optional
@@ -35,7 +34,7 @@ custom:
       - Effect: Allow
         Sid: Allow administration of the key
         Principal:
-          AWS: 'arn:aws:iam::${self:custom.awsAccountId}:root'
+          AWS: 'arn:aws:iam::<account_id>:root'
         Action:
           - kms:*
         Resource: '*'

@@ -15,22 +15,8 @@ class ServerlessPlugin {
         this.configureProxy();
 
         this.hooks = {
-            'after:package:setupProviderConfiguration': this.initAccountId.bind(this),
             'before:deploy:createDeploymentArtifacts': this.encryptVars.bind(this)
         };
-    }
-
-    initAccountId () {
-        if (!this.serverless.service.custom.awsAccountId) {
-            return this.serverless.providers.aws.getAccountId()
-                .then((accountId) => this.serverless.service.custom.awsAccountId = accountId)
-                .catch((error) => {
-                    console.log(`Error on set aws account id: ${JSON.stringify(error)}`);
-                    throw error;
-                });
-        } else {
-            return Promise.resolve();
-        }
     }
 
     encryptVars() {
