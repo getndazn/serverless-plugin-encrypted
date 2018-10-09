@@ -26,6 +26,7 @@ plugins:
   - serverless-plugin-encrypted
     
 custom:
+  awsAccountId: null # If this porperty is null or empty, the plugin will auto set before all.
   kmsKeyId: ${self:provider.stage}-my-service
 
   kmsKeyPolicy: # optional
@@ -34,7 +35,7 @@ custom:
       - Effect: Allow
         Sid: Allow administration of the key
         Principal:
-          AWS: 'arn:aws:iam::<account_id>:root'
+          AWS: 'arn:aws:iam::${self:custom.awsAccountId}:root'
         Action:
           - kms:*
         Resource: '*'

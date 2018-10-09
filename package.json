@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "https://github.com/nalbion/serverless-plugin-encrypted.git",
   "author": "Nicholas Albion <nalbion@yahoo.com>",
-  "contributors":[
+  "contributors": [
     "Heitor Rubira <heitor.rubira@massive.com>"
   ],
   "license": "MIT",
