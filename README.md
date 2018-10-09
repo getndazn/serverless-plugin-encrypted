@@ -1,4 +1,4 @@
-# serverless-plugin-encrypted
+# serverless-plugin-encrypted (Version: 1.2.0)
 
 A [Serverless](https://serverless.com/) [plugin](https://serverless.com/framework/docs/providers/aws/guide/plugins/)
  which encrypts Lambda environment variables using an KMS key which is automatically generated for each stage.
