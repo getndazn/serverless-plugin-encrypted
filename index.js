@@ -36,7 +36,7 @@ class ServerlessPlugin {
         })
     }
 
-    replaceVars = (obj, vars) => {
+    replaceVars(obj, vars) {
         const REPLACER = /\{aws::(.+?)\}/gm;
         let sobj = JSON.stringify(obj);
         let m;
@@ -157,7 +157,6 @@ class ServerlessPlugin {
         let KeyPolicy;
         if (this.serverless.service.custom.kmsKeyPolicy) {
             KeyPolicy = this.replaceVars(this.serverless.service.custom.kmsKeyPolicy, {
-                region: this.region,
                 accountId: this.accountId
             });
             this.serverless.cli.log('Creating KMS key with Policy:\n' + JSON.stringify(KeyPolicy, null, 2));

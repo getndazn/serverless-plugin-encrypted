@@ -89,8 +89,9 @@ In your policy, you may want to use a special replaceable in your `Principal` or
 
 Ex.:
 ```yaml
-//...
+// ...
 Principal:
+  AWS:
     - 'arn:aws:iam::{aws::accountId}:root'
 ```
 The output will be something like: `'arn:aws:iam::123456789:root'`
