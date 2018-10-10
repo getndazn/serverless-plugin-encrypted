@@ -10,14 +10,51 @@ class ServerlessPlugin {
         this.options = options;
 
         if (process.env.AWS_TIMEOUT) {
-            AWS.config.httpOptions = {timeout: parseInt(process.env.AWS_TIMEOUT)};
+            AWS.config.httpOptions = { timeout: parseInt(process.env.AWS_TIMEOUT) };
         }
         this.configureProxy();
 
         this.hooks = {
+            'after:package:initialize': this.init.bind(this),
             'before:deploy:createDeploymentArtifacts': this.encryptVars.bind(this)
         };
     }
+
+    init() {
+        this.serverless.cli.log('Initializing variables...');
+        this.region = this.serverless.service.provider.region;
+        return new Promise((resolve, reject) => {
+            this.serverless.providers.aws.getAccountId()
+                .then((accountId) => {
+                    this.accountId = accountId;
+                    resolve();
+                })
+                .catch((error) => {
+                    console.log(`Error on initialize plugin variables.`, { error });
+                    reject(error);
+                });
+        })
+    }
+
+    replaceVars = (obj, vars) => {
+        const REPLACER = /\{aws::(.+?)\}/gm;
+        let sobj = JSON.stringify(obj);
+        let m;
+        let info = [];
+        do {
+            m = REPLACER.exec(sobj);
+            if (m) {
+                info.push({
+                    match: m[0],
+                    prop: m[1]
+                });
+            }
+        } while (m);
+        info.forEach((i) => {
+            sobj = sobj.replace(i.match, vars[i.prop]);
+        })
+        return JSON.parse(sobj);
+    };
 
     encryptVars() {
         this.kms = new AWS.KMS({
@@ -64,7 +101,7 @@ class ServerlessPlugin {
         this.serverless.cli.log(`Checking for KMS key ${this.serverless.service.custom.kmsKeyId}`);
 
         return new Promise((resolve, reject) => {
-            this.kms.describeKey({KeyId: alias}, (err, data) => {
+            this.kms.describeKey({ KeyId: alias }, (err, data) => {
                 if (err) {
                     if (err.code != 'NotFoundException') {
                         console.error('failed to query key:', err);
@@ -119,7 +156,10 @@ class ServerlessPlugin {
         this.serverless.cli.log('Getting custom KMS Key Policy...');
         let KeyPolicy;
         if (this.serverless.service.custom.kmsKeyPolicy) {
-            KeyPolicy = this.serverless.service.custom.kmsKeyPolicy;
+            KeyPolicy = this.replaceVars(this.serverless.service.custom.kmsKeyPolicy, {
+                region: this.region,
+                accountId: this.accountId
+            });
             this.serverless.cli.log('Creating KMS key with Policy:\n' + JSON.stringify(KeyPolicy, null, 2));
         } else {
             this.serverless.cli.log('KMS Key Policy not found at custom, will be set the AWS Default Policy!')
@@ -135,7 +175,7 @@ class ServerlessPlugin {
                 });
             });
         }
-        
+
         return new Promise((resolve, reject) => {
             this.kms.createKey({
                 Policy: KeyPolicy ? JSON.stringify(KeyPolicy) : undefined,
@@ -185,7 +225,7 @@ class ServerlessPlugin {
             }
             this.serverless.service.provider.iamRoleStatements.push({
                 Effect: 'Allow',
-                Action: [ 'kms:Decrypt' ],
+                Action: ['kms:Decrypt'],
                 Resource: this.kmsKeyArn
             });
         }

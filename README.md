@@ -73,12 +73,27 @@ If it finds an entry in `custom.encrypted` with a matching name it will use the 
 (eg: `custom.encrypted.SECRET_PASSWORD`) and update the provider and function values.
  
 Note: The original values in the provider and functions will be discarded. 
-ie `functions.my-function.environment.SECRET_PASSWORD` has been set to `${self:custom.encrypted.SECRET_PASSWORD}` 
+ie `functions.my-function.environment.SECRET_PASSWORD` has been set to `${self:custom.encrypted.SECRET_PASSWORD}`
+
 in the example above, but it could be anything really, although it is a recommended convention.
 
 ## Policy (kmsKeyPolicy)
 
 The key policy to attach to the CMK.
+
+### Auto set properties (region & accountId)
+
+In your policy, you may want to use a special replaceable in your `Principal` or other part of it, there's a option that you an use:
+
+- `{aws::accountId}`: For the aws account id.
+
+Ex.:
+```yaml
+//...
+Principal:
+    - 'arn:aws:iam::{aws::accountId}:root'
+```
+The output will be something like: `'arn:aws:iam::123456789:root'`
 
 ### If you provide a key policy, it must meet the following criteria:
 
@@ -90,7 +105,7 @@ The key policy to attach to the CMK.
 
 > NOTE: If you do not provide a key policy, AWS KMS attaches a default key policy to the CMK. For more information, see [Default Key Policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default) in the ***AWS Key Management Service Developer Guide***.
 
-## Auto Create IAM Role Statement (kmsKeyCreateRoleStatement)
+## Auto Create IAM Role Statement (kmsKeyAddRoleStatement)
 
 If `kmsKeyAddRoleStatement` is set as `true`, the plugin will auto create and add to the iamRoleStatements the folowing role:
 
