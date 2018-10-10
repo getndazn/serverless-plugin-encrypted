@@ -81,7 +81,7 @@ in the example above, but it could be anything really, although it is a recommen
 
 The key policy to attach to the CMK.
 
-### Auto set properties (region & accountId)
+### Auto set property (accountId)
 
 In your policy, you may want to use a special replaceable in your `Principal` or other part of it, there's a option that you an use:
 
